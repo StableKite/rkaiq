@@ -3,7 +3,7 @@ divert(-1)
 define(`M4_FATAL', `divert(0)errprint(`FATAL: $1
 ')m4exit(1)')
 
-define(`M4_MACRO', `esyscmd(./desc.sh $@) 'dnl
+define(`M4_MACRO', `esyscmd(/bin/sh ./desc.sh $@) 'dnl
 `ifelse(sysval, 0, , `M4_FATAL(`Invalid args for $1:' shift($*))')')
 
 define(`M4_XARGS', `$1 ifelse(eval($# < 2), 1, , `M4_XARGS(shift($@))')')

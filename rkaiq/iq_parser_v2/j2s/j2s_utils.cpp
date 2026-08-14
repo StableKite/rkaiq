@@ -331,8 +331,6 @@ static __attribute__((unused)) void j2s_save_ctx_cache(j2s_ctx* ctx,
     const char* cache_file)
 {
     int fd;
-    ssize_t bytes_written = 0;
-
     if (!cache_file)
         return;
 
@@ -346,11 +344,17 @@ static __attribute__((unused)) void j2s_save_ctx_cache(j2s_ctx* ctx,
 
     ctx->num_desc = 0;
 
-    bytes_written = write(fd, ctx, sizeof(*ctx));
-    bytes_written = write(fd, ctx->objs, ctx->num_obj * sizeof(*ctx->objs));
-    bytes_written = write(fd, ctx->structs, ctx->num_struct * sizeof(*ctx->structs));
-    bytes_written = write(fd, ctx->enums, ctx->num_enum * sizeof(*ctx->enums));
-    bytes_written = write(fd, ctx->enum_values, ctx->num_enum_value * sizeof(*ctx->enum_values));
+    bool write_ok = write(fd, ctx, sizeof(*ctx)) == static_cast<ssize_t>(sizeof(*ctx));
+    write_ok = write_ok && write(fd, ctx->objs, ctx->num_obj * sizeof(*ctx->objs)) ==
+        static_cast<ssize_t>(ctx->num_obj * sizeof(*ctx->objs));
+    write_ok = write_ok && write(fd, ctx->structs, ctx->num_struct * sizeof(*ctx->structs)) ==
+        static_cast<ssize_t>(ctx->num_struct * sizeof(*ctx->structs));
+    write_ok = write_ok && write(fd, ctx->enums, ctx->num_enum * sizeof(*ctx->enums)) ==
+        static_cast<ssize_t>(ctx->num_enum * sizeof(*ctx->enums));
+    write_ok = write_ok && write(fd, ctx->enum_values, ctx->num_enum_value * sizeof(*ctx->enum_values)) ==
+        static_cast<ssize_t>(ctx->num_enum_value * sizeof(*ctx->enum_values));
+    if (!write_ok)
+        DBG("failed to save context cache: '%s'\n", cache_file);
 
     close(fd);
 }
@@ -494,8 +498,6 @@ void j2s_save_struct_cache(j2s_ctx* ctx, const char* cache_file, void* ptr,
     void* auth_data, int auth_size)
 {
     int fd;
-    ssize_t bytes_written = 0;
-
     fd = creat(cache_file, S_IRUSR | S_IWUSR);
     if (fd < 0) {
         DBG("failed to create: '%s'\n", cache_file);
@@ -504,8 +506,11 @@ void j2s_save_struct_cache(j2s_ctx* ctx, const char* cache_file, void* ptr,
 
     DBG("Saving struct cache: '%s'\n", cache_file);
 
-    if (auth_data && auth_size)
-        bytes_written = write(fd, auth_data, auth_size);
+    if (auth_data && auth_size && write(fd, auth_data, auth_size) != auth_size) {
+        DBG("failed to save cache authorization data\n");
+        close(fd);
+        return;
+    }
 
     j2s_root_struct_to_cache(ctx, fd, ptr);
 

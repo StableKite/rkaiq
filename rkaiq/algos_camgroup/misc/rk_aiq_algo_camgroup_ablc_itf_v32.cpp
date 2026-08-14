@@ -200,7 +200,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 #endif
 
     LOGI_ABLC("%s: (exit)\n", __FUNCTION__ );
-    return XCAM_RETURN_NO_ERROR;
+    return result;
 }
 
 RkAiqAlgoDescription g_RkIspAlgoDescCamgroupAblcV32 = {

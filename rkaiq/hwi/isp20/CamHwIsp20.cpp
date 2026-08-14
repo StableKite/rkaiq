@@ -1403,7 +1403,6 @@ CamHwIsp20::getBindedSnsEntNmByVd(const char* vd)
                 FILE *fp = NULL;
                 struct media_device *device = NULL;
                 uint32_t j = 0, i = 0;
-                const struct media_entity_desc *entity_info = NULL;
                 struct media_entity *entity = NULL;
                 media_pad *src_pad_s = NULL;
                 char sys_path[64];
@@ -1421,7 +1420,6 @@ CamHwIsp20::getBindedSnsEntNmByVd(const char* vd)
                 entity = media_get_entity_by_name(device,
                                                   s_full_info->sensor_name.c_str(),
                                                   s_full_info->sensor_name.size());
-                entity_info = media_entity_get_info(entity);
                 if (entity && entity->num_links > 0) {
                     if (entity->links[0].flags == MEDIA_LNK_FL_ENABLED) {
                         media_device_unref (device);
@@ -6015,8 +6013,6 @@ XCamReturn CamHwIsp20::get_stream_format(rkaiq_stream_type_t type, struct v4l2_f
         isp_fmt.pad = 2;
         ret = mIspCoreDev->getFormat(isp_fmt);
         if (ret == XCAM_RETURN_NO_ERROR) {
-            BaseSensorHw* sensorHw;
-            sensorHw = mSensorDev.get_cast_ptr<BaseSensorHw>();
             format.fmt.pix.width = isp_fmt.format.width;
             format.fmt.pix.height = isp_fmt.format.height;
             format.fmt.pix.pixelformat = get_v4l2_pixelformat(isp_fmt.format.code);
@@ -6166,7 +6162,7 @@ CamHwIsp20::pixFmt2Bpp(uint32_t pixFmt, int8_t& bpp)
 XCamReturn
 CamHwIsp20::rawReproc_genIspParams (uint32_t sequence, rk_aiq_frame_info_t *offline_finfo, int mode)
 {
-    XCamReturn ret;
+    XCamReturn ret = XCAM_RETURN_NO_ERROR;
     if (mode) {
         if (offline_finfo) {
             SensorHw* mSensor = mSensorDev.get_cast_ptr<SensorHw>();
@@ -6193,7 +6189,7 @@ CamHwIsp20::rawReproc_genIspParams (uint32_t sequence, rk_aiq_frame_info_t *offl
         }
     }
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 const char*

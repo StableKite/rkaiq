@@ -18,6 +18,7 @@
  * Author: Wind Yuan <feng.yuan@intel.com>
  * Author: John Ye <john.ye@intel.com>
  */
+#include <array>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -160,12 +161,11 @@ int
 FakeV4l2Device::poll_event (int timeout_msec, int stop_fd)
 {
     int num_fds = stop_fd == -1 ? 1 : 2;
-    struct pollfd poll_fds[num_fds];
+    std::array<struct pollfd, 2> poll_fds{};
     int ret = 0;
 
     XCAM_ASSERT (_fd > 0);
 
-    memset(poll_fds, 0, sizeof(poll_fds));
     poll_fds[0].fd = _pipe_fd[0];
     poll_fds[0].events = (POLLPRI | POLLIN | POLLOUT);
 
@@ -175,7 +175,7 @@ FakeV4l2Device::poll_event (int timeout_msec, int stop_fd)
         poll_fds[1].revents = 0;
     }
 
-    ret = poll (poll_fds, num_fds, timeout_msec);
+    ret = poll (poll_fds.data(), num_fds, timeout_msec);
     if (ret > 0) {
         if (stop_fd != -1) {
             if (poll_fds[1].revents & (POLLIN | POLLPRI)) {

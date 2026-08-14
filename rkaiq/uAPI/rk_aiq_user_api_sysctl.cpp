@@ -528,6 +528,7 @@ rk_aiq_uapi_sysctl_init(const char* sns_ent_name,
             } else {
                 user_hdr_mode = it->second.mode;
                 LOGI("selected by user sepcified hdr mode %d", user_hdr_mode);
+                (void)user_hdr_mode;
             }
 
             if (!it->second.main_scene.empty())

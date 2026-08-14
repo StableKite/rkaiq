@@ -300,7 +300,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 #endif
 
     LOGI_ANR("%s: (exit)\n", __FUNCTION__ );
-    return XCAM_RETURN_NO_ERROR;
+    return result;
 }
 
 static XCamReturn

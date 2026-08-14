@@ -52,7 +52,8 @@
 
 #include "cJSON_Utils.h"
 
-/* define our own boolean type */
+/* define our own boolean type for the C translation unit only */
+#ifndef __cplusplus
 #ifdef true
 #undef true
 #endif
@@ -62,6 +63,7 @@
 #undef false
 #endif
 #define false ((cJSON_bool)0)
+#endif
 
 #ifdef __cplusplus
 using namespace RkCam;

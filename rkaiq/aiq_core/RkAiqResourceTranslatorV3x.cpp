@@ -420,9 +420,12 @@ void MergeAecSubWinStats(
 
         // step2 subtract bls1
         if(left_en[i] == 1 || right_en[i] == 1) {
-            merge_stats->wndx_sumr[i] = (u32)CLIP((merge_stats->wndx_sumr[i] - (pixel_num[i] >> 2) * bls1_val.r) * bls_ratio[0], 0, MAX_29BITS);
-            merge_stats->wndx_sumg[i] = (u32)CLIP((merge_stats->wndx_sumg[i] - (pixel_num[i] >> 1) * bls1_val.gr) * bls_ratio[1], 0, MAX_32BITS);
-            merge_stats->wndx_sumb[i] = (u32)CLIP((merge_stats->wndx_sumb[i] - (pixel_num[i] >> 2) * bls1_val.b) * bls_ratio[2], 0, MAX_29BITS);
+            const double sum_r = static_cast<double>(merge_stats->wndx_sumr[i] - (pixel_num[i] >> 2) * bls1_val.r) * static_cast<double>(bls_ratio[0]);
+            const double sum_g = static_cast<double>(merge_stats->wndx_sumg[i] - (pixel_num[i] >> 1) * bls1_val.gr) * static_cast<double>(bls_ratio[1]);
+            const double sum_b = static_cast<double>(merge_stats->wndx_sumb[i] - (pixel_num[i] >> 2) * bls1_val.b) * static_cast<double>(bls_ratio[2]);
+            merge_stats->wndx_sumr[i] = static_cast<u32>(CLIP(sum_r, 0.0, static_cast<double>(MAX_29BITS)));
+            merge_stats->wndx_sumg[i] = static_cast<u32>(CLIP(sum_g, 0.0, static_cast<double>(MAX_32BITS)));
+            merge_stats->wndx_sumb[i] = static_cast<u32>(CLIP(sum_b, 0.0, static_cast<double>(MAX_29BITS)));
         }
     }
 }
@@ -1363,6 +1366,8 @@ RkAiqResourceTranslatorV3x::translateMultiAfStats (const SmartPtr<VideoBuffer> &
     r_isp_ed = right_isp_rect_.x + right_isp_rect_.w;
     LOGD_AF("wina.x_st %d, wina.x_ed %d, l_isp_st %d, l_isp_ed %d, r_isp_st %d, r_isp_ed %d",
             x_st, x_ed, l_isp_st, l_isp_ed, r_isp_st, r_isp_ed);
+    (void)l_isp_st;
+    (void)r_isp_ed;
 
     //// winA ////
     af_split_info.wina_l_ratio = 0;

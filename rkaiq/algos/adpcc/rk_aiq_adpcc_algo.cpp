@@ -1112,6 +1112,11 @@ AdpccResult_t Expert_mode_select_basic_params_by_ISO(
     LOGD_ADPCC("%s:(%d) iso:%d lowLevel:%d hightLevel:%d lowIso:%d HighIso:%d ratio:%f",
                __FUNCTION__, __LINE__, iso, lowLevel, highLevel, lowIso, highIso, ratio);
 
+    (void)highLevel;
+    (void)lowIso;
+    (void)highIso;
+    (void)ratio;
+
     // copy param from pParams->arBasic[lowLevel]
     ret = Expert_mode_param_cpy(pSelect, &pParams->arBasic[lowLevel]);
     if (ret != ADPCC_RET_SUCCESS) {

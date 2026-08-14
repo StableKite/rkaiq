@@ -19,6 +19,7 @@
 #define __ADRC_UAPI_COMPACT_H__
 
 #include "adrc_head.h"
+#include "adrc/rk_aiq_types_adrc_algo_int.h"
 #include "adrc_uapi_head.h"
 
 typedef enum AdrcVersion_e {

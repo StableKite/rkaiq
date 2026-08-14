@@ -219,7 +219,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 #endif
 
     LOG1_ADPCC("%s: (exit)", __FUNCTION__ );
-    return XCAM_RETURN_NO_ERROR;
+    return result;
 }
 
 RkAiqAlgoDescription g_RkIspAlgoDescCamgroupAdpcc = {

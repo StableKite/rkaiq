@@ -1644,7 +1644,7 @@ SensorHw::set_pause_flag(bool mode, uint32_t frameId, bool isSingleMode)
         }
     }
     _mutex.unlock();
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 } //namespace RkCam

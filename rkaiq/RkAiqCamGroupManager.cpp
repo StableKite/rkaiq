@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <vector>
 #include "RkAiqCamGroupManager.h"
 
 #include <thread>
@@ -995,10 +996,8 @@ RkAiqCamGroupManager::reProcess(rk_aiq_groupcam_result_t* gc_res)
 
     LOGD_CAMGROUP("camgroup: set reprocess params ... ");
 
-    int arraySize = mBindAiqsMap.size();
-    rk_aiq_singlecam_3a_result_t* camgroupParmasArray[arraySize];
-
-    memset(camgroupParmasArray, 0, sizeof(camgroupParmasArray));
+    const int arraySize = static_cast<int>(mBindAiqsMap.size());
+    std::vector<rk_aiq_singlecam_3a_result_t*> camgroupParmasArray(arraySize, nullptr);
 
     int i = 0, vaild_cam_ind = 0;
     rk_aiq_singlecam_3a_result_t* scam_3a_res = NULL;
@@ -1227,7 +1226,7 @@ RkAiqCamGroupManager::reProcess(rk_aiq_groupcam_result_t* gc_res)
                 /* update user initial params */
                 ret = curHdl->updateConfig(true);
                 RKAIQCORE_CHECK_BYPASS(ret, "algoHdl %d update initial user params failed", curHdl->getAlgoType());
-                ret = curHdl->processing(camgroupParmasArray);
+                ret = curHdl->processing(camgroupParmasArray.data());
                 if (ret < 0) {
                     LOGW_CAMGROUP("algoHdl %d processing failed", curHdl->getAlgoType());
                 }
@@ -1440,6 +1439,7 @@ RkAiqCamGroupManager::enableAlgo(int algoType, int id, bool enable)
     }
 
     LOGI_ANALYZER("algo type %d enabled count :%d", algoType, enable_cnt);
+    (void)enable_cnt;
 
     EXIT_ANALYZER_FUNCTION();
 

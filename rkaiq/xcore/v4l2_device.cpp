@@ -20,6 +20,8 @@
  */
 
 #include "v4l2_device.h"
+#include <array>
+#include <vector>
 #include <sys/ioctl.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -255,12 +257,11 @@ int
 V4l2Device::poll_event (int timeout_msec, int stop_fd)
 {
     int num_fds = stop_fd == -1 ? 1 : 2;
-    struct pollfd poll_fds[num_fds];
+    std::array<struct pollfd, 2> poll_fds{};
     int ret = 0;
 
     XCAM_ASSERT (_fd > 0);
 
-    memset(poll_fds, 0, sizeof(poll_fds));
     poll_fds[0].fd = _fd;
     poll_fds[0].events = (POLLPRI | POLLIN | POLLOUT | POLLERR | POLLNVAL | POLLHUP);
 
@@ -270,7 +271,7 @@ V4l2Device::poll_event (int timeout_msec, int stop_fd)
         poll_fds[1].revents = 0;
     }
 
-    ret = poll (poll_fds, num_fds, timeout_msec);
+    ret = poll (poll_fds.data(), num_fds, timeout_msec);
     if (stop_fd != -1) {
         if ((poll_fds[1].revents & POLLIN) || (poll_fds[1].revents & POLLPRI)) {
             XCAM_LOG_DEBUG ("%s: Poll returning from flush", __FUNCTION__);
@@ -755,7 +756,7 @@ V4l2Device::stop ()
         _active = false;
         /* while (_queued_bufcnt > 0) { */
         /*     struct v4l2_buffer v4l2_buf; */
-        /*     struct v4l2_plane planes[_mplanes_count]; */
+        /*     std::vector<struct v4l2_plane> planes(_mplanes_count); */
 
         /*     xcam_mem_clear (v4l2_buf); */
         /*     v4l2_buf.type = _buf_type; */
@@ -763,8 +764,8 @@ V4l2Device::stop ()
 
         /*     if (V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE == _buf_type || */
         /*             V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE == _buf_type) { */
-        /*         memset(planes, 0, sizeof(struct v4l2_plane) * _mplanes_count); */
-        /*         v4l2_buf.m.planes = planes; */
+        /*         memset(planes.data(), 0, sizeof(struct v4l2_plane) * _mplanes_count); */
+        /*         v4l2_buf.m.planes = planes.data(); */
         /*         v4l2_buf.length = _mplanes_count; */
         /*     } */
 
@@ -1098,7 +1099,7 @@ XCamReturn
 V4l2Device::dequeue_buffer(SmartPtr<V4l2Buffer> &buf)
 {
     struct v4l2_buffer v4l2_buf;
-    struct v4l2_plane planes[_mplanes_count];
+    std::vector<struct v4l2_plane> planes(_mplanes_count);
 
     if (!is_activated()) {
         XCAM_LOG_DEBUG (
@@ -1112,8 +1113,8 @@ V4l2Device::dequeue_buffer(SmartPtr<V4l2Buffer> &buf)
 
     if (V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE == _buf_type ||
             V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE == _buf_type) {
-        memset(planes, 0, sizeof(struct v4l2_plane) * _mplanes_count);
-        v4l2_buf.m.planes = planes;
+        memset(planes.data(), 0, sizeof(struct v4l2_plane) * _mplanes_count);
+        v4l2_buf.m.planes = planes.data();
         v4l2_buf.length = _mplanes_count;
     }
 
@@ -1236,7 +1237,7 @@ V4l2Device::queue_buffer (SmartPtr<V4l2Buffer> &buf, bool locked)
     buf->reset ();
 
     struct v4l2_buffer v4l2_buf = buf->get_buf ();
-    struct v4l2_plane planes[_mplanes_count];
+    std::vector<struct v4l2_plane> planes(_mplanes_count);
 
     XCAM_ASSERT (v4l2_buf.index < _buf_count);
 
@@ -1245,8 +1246,8 @@ V4l2Device::queue_buffer (SmartPtr<V4l2Buffer> &buf, bool locked)
         XCAM_LOG_DEBUG ("device(%s) queue buffer index:%d, memory:%d, type:%d, multiply planar:%d, length:%d, fd:%d, ptr:%p",
                         XCAM_STR (_name), v4l2_buf.index, v4l2_buf.memory,
                         v4l2_buf.type, v4l2_buf.length, v4l2_buf.m.planes[0].length, buf->get_expbuf_fd(), buf->get_expbuf_usrptr());
-        memset(planes, 0, sizeof(struct v4l2_plane) * _mplanes_count);
-        v4l2_buf.m.planes = planes;
+        memset(planes.data(), 0, sizeof(struct v4l2_plane) * _mplanes_count);
+        v4l2_buf.m.planes = planes.data();
         planes[0] = buf->get_buf ().m.planes[0];
     } else {
         XCAM_LOG_DEBUG ("device(%s) queue buffer index:%d, memory:%d, type:%d, length:%d, fd:%d",

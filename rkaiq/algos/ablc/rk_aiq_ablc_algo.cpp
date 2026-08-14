@@ -289,7 +289,7 @@ AblcResult_t AblcProcess(AblcContext_t *pAblcCtx, AblcExpInfo_t *pExpInfo)
     }
 
     LOG1_ABLC("%s(%d): exit!\n", __FUNCTION__, __LINE__);
-    return ABLC_RET_SUCCESS;
+    return ret;
 }
 
 

@@ -28,8 +28,8 @@
 #ifdef HAS_LIBDL
 #include <dlfcn.h>
 #endif
-#include "rga/im2d.h"
-#include "rga/rga.h"
+#include "im2d.h"
+#include "rga.h"
 #endif
 
 namespace RkCam {
@@ -37,14 +37,14 @@ namespace RkCam {
 #ifdef HAS_LIBRGA
 #define RGA_LIBRARY_NAME "librga.so"
 
-using fp_imresize_t   = int (*)(const rga_buffer_t src, rga_buffer_t dst, double fx, double fy,
+using fp_imresize_t   = IM_STATUS (*)(const rga_buffer_t src, rga_buffer_t dst, double fx, double fy,
                               int interpolation, int sync);
-using fp_imcrop_t     = int (*)(const rga_buffer_t src, rga_buffer_t dst, im_rect rect, int sync);
-using fp_imcvtcolor_t = int (*)(rga_buffer_t src, rga_buffer_t dst, int sfmt, int dfmt, int mode,
+using fp_imcrop_t     = IM_STATUS (*)(const rga_buffer_t src, rga_buffer_t dst, im_rect rect, int sync);
+using fp_imcvtcolor_t = IM_STATUS (*)(rga_buffer_t src, rga_buffer_t dst, int sfmt, int dfmt, int mode,
                                 int sync);
-using fp_imrotate_t   = int (*)(const rga_buffer_t src, rga_buffer_t dst, int rotation, int sync);
-using fp_imflip_t     = int (*)(const rga_buffer_t src, rga_buffer_t dst, int mode, int sync);
-using fp_imcopy_t     = int (*)(const rga_buffer_t src, rga_buffer_t dst, int sync);
+using fp_imrotate_t   = IM_STATUS (*)(const rga_buffer_t src, rga_buffer_t dst, int rotation, int sync);
+using fp_imflip_t     = IM_STATUS (*)(const rga_buffer_t src, rga_buffer_t dst, int mode, int sync);
+using fp_imcopy_t     = IM_STATUS (*)(const rga_buffer_t src, rga_buffer_t dst, int sync);
 using fp_wrapbuffer_virtualaddr_t  = rga_buffer_t (*)(void* vir_addr, int width, int height,
                                                      int wstride, int hstride, int format);
 using fp_wrapbuffer_physicaladdr_t = rga_buffer_t (*)(void* phy_addr, int width, int height,
@@ -103,71 +103,50 @@ class RGAOperator : public ImageOperator {
     }
 
     XCamReturn resolve_symbles(void) {
-#ifdef HAS_LIBDL
-        char* error;
-        handle_ = dlopen(RGA_LIBRARY_NAME, RTLD_LAZY);
+#ifdef RKAIQ_STATIC_RGA_PROVIDER
+        rga_ops_.wrapbuffer_virtualaddr_t = &wrapbuffer_virtualaddr_t;
+        rga_ops_.wrapbuffer_physicaladdr_t = &wrapbuffer_physicaladdr_t;
+        rga_ops_.wrapbuffer_fd_t = &wrapbuffer_fd_t;
+        rga_ops_.imresize_t = &imresize_t;
+        rga_ops_.imcrop_t = &imcrop_t;
+        rga_ops_.imcvtcolor_t = &imcvtcolor_t;
+        rga_ops_.imrotate_t = &imrotate_t;
+        rga_ops_.imflip_t = &imflip_t;
+        rga_ops_.imcopy_t = &imcopy_t;
+#elif defined(HAS_LIBDL)
+        handle_ = dlopen(RGA_LIBRARY_NAME, RTLD_NOW | RTLD_LOCAL);
         if (!handle_) {
-            LOGE("Failed to dlopen librga.so : %s", dlerror());
+            LOGE("Failed to dlopen librga.so: %s", dlerror());
             return XCAM_RETURN_ERROR_UNKNOWN;
         }
-        dlerror();
-        rga_ops_.wrapbuffer_virtualaddr_t =
-            (fp_wrapbuffer_virtualaddr_t)dlsym(handle_, "wrapbuffer_virtualaddr_t");
-        error = dlerror();
-        if (error != NULL) {
-            LOGE("Failed to resolve symble wrapbuffer_virtualaddr_t: %s", error);
-        }
 
-        rga_ops_.wrapbuffer_physicaladdr_t =
-            (fp_wrapbuffer_physicaladdr_t)dlsym(handle_, "wrapbuffer_physicaladdr_t");
-        error = dlerror();
-        if (error != NULL) {
-            LOGE("Failed to resolve symble wrapbuffer_physicaladdr_t: %s", error);
-        }
+#define RKAIQ_RESOLVE_RGA_SYMBOL(member, symbol)                                      \
+        do {                                                                           \
+            dlerror();                                                                 \
+            rga_ops_.member = reinterpret_cast<decltype(rga_ops_.member)>(             \
+                dlsym(handle_, #symbol));                                               \
+            const char* error = dlerror();                                              \
+            if (error != NULL || rga_ops_.member == NULL) {                            \
+                LOGE("Failed to resolve RGA symbol %s: %s", #symbol,                  \
+                     error != NULL ? error : "missing symbol");                        \
+                return XCAM_RETURN_ERROR_UNKNOWN;                                      \
+            }                                                                          \
+        } while (0)
 
-        rga_ops_.wrapbuffer_fd_t = (fp_wrapbuffer_fd_t)dlsym(handle_, "wrapbuffer_fd_t");
-        error                    = dlerror();
-        if (error != NULL) {
-            LOGE("Failed to resolve symble wrapbuffer_fd_t : %s", error);
-        }
-
-        rga_ops_.imresize_t = (fp_imresize_t)dlsym(handle_, "imresize_t");
-        error               = dlerror();
-        if (error != NULL) {
-            LOGE("Failed to resolve symble imreize_t : %s", error);
-        }
-
-        rga_ops_.imcrop_t = (fp_imcrop_t)dlsym(handle_, "imcrop_t");
-        error             = dlerror();
-        if (error != NULL) {
-            LOGE("Failed to resolve symble imcrop_t: %s", error);
-        }
-
-        rga_ops_.imcvtcolor_t = (fp_imcvtcolor_t)dlsym(handle_, "imcvtcolor_t");
-        error                 = dlerror();
-        if (error != NULL) {
-            LOGE("Failed to resolve symble imcvtcolor_t : %s", error);
-        }
-
-        rga_ops_.imrotate_t = (fp_imrotate_t)dlsym(handle_, "imrotate_t");
-        error               = dlerror();
-        if (error != NULL) {
-            LOGE("Failed to resolve symble imrotete_t : %s", error);
-        }
-
-        rga_ops_.imflip_t = (fp_imflip_t)dlsym(handle_, "imflip_t");
-        error             = dlerror();
-        if (error != NULL) {
-            LOGE("Failed to resolve symble imflip_t : %s", error);
-        }
-
-        rga_ops_.imcopy_t = (fp_imcopy_t)dlsym(handle_, "imcopy_t");
-        error             = dlerror();
-        if (error != NULL) {
-            LOGE("Failed to resolve symble imcopy_t : %s", error);
-        }
-#endif  // HAS_LIBDL
-
+        RKAIQ_RESOLVE_RGA_SYMBOL(wrapbuffer_virtualaddr_t, wrapbuffer_virtualaddr_t);
+        RKAIQ_RESOLVE_RGA_SYMBOL(wrapbuffer_physicaladdr_t, wrapbuffer_physicaladdr_t);
+        RKAIQ_RESOLVE_RGA_SYMBOL(wrapbuffer_fd_t, wrapbuffer_fd_t);
+        RKAIQ_RESOLVE_RGA_SYMBOL(imresize_t, imresize_t);
+        RKAIQ_RESOLVE_RGA_SYMBOL(imcrop_t, imcrop_t);
+        RKAIQ_RESOLVE_RGA_SYMBOL(imcvtcolor_t, imcvtcolor_t);
+        RKAIQ_RESOLVE_RGA_SYMBOL(imrotate_t, imrotate_t);
+        RKAIQ_RESOLVE_RGA_SYMBOL(imflip_t, imflip_t);
+        RKAIQ_RESOLVE_RGA_SYMBOL(imcopy_t, imcopy_t);
+#undef RKAIQ_RESOLVE_RGA_SYMBOL
+#else
+        LOGE("RGA provider is unavailable");
+        return XCAM_RETURN_ERROR_UNKNOWN;
+#endif
         return XCAM_RETURN_NO_ERROR;
     };
 
@@ -263,16 +242,15 @@ void ImageProcessor::set_operator(const std::string& name) {
     if (operator_ != nullptr && !name.compare(operator_->get_name())) {
         return;
     }
-#ifdef HAS_LIBRGA
-#ifdef HAS_LIBDL
+#if defined(HAS_LIBRGA) && (defined(HAS_LIBDL) || defined(RKAIQ_STATIC_RGA_PROVIDER))
     if (!name.compare("rga")) {
         auto ops = std::unique_ptr<RGAOperator>{new RGAOperator};
-        ops->resolve_symbles();
+        if (ops->resolve_symbles() != XCAM_RETURN_NO_ERROR) {
+            LOGE("failed to resolve RGA image-operator symbols");
+            return;
+        }
         operator_ = std::move(ops);
     }
-#else
-#warning "Using RGA without dynamic loading is NOT implemented yet!!!"
-#endif
 #endif
 }
 

@@ -505,7 +505,7 @@ RkAiqManager::updateCalibDb(const CamCalibDbV2Context_t* newCalibDb)
     }
 
     EXIT_XCORE_FUNCTION();
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
@@ -748,7 +748,6 @@ RkAiqManager::hwResCb(SmartPtr<VideoBuffer>& hwres)
         ret = mRkAiqAnalyzer->pushStats(hwres);
     }
 
-exit:
     EXIT_XCORE_FUNCTION();
 
     return ret;
@@ -1028,6 +1027,8 @@ RkAiqManager::rkLumaCalcDone(rk_aiq_luma_params_t luma_params)
     ENTER_XCORE_FUNCTION();
     XCamReturn ret = XCAM_RETURN_NO_ERROR;
     ret = mCamHw->setHdrProcessCount(luma_params);
+    if (ret != XCAM_RETURN_NO_ERROR)
+        LOGE_ANALYZER("set HDR process count failed: %d", ret);
     EXIT_XCORE_FUNCTION();
 }
 

@@ -28,6 +28,12 @@
 #include "algos/acac/rk_aiq_types_acac_algo.h"
 #include "asharpV33/rk_aiq_types_asharp_algo_v33.h"
 #include "aynrV22/rk_aiq_types_aynr_algo_v22.h"
+#include "amerge/rk_aiq_types_amerge_hw.h"
+#include "adrc/rk_aiq_types_adrc_hw.h"
+#include "adehaze/rk_aiq_types_adehaze_hw.h"
+#include "aldch/rk_aiq_types_aldch_algo.h"
+#include "awb/rk_aiq_types_awb_stat_v32.h"
+#include "af/rk_aiq_types_af_algo.h"
 #include "rk_aiq_comm.h"
 #include "rk_aiq_mems_sensor.h"
 

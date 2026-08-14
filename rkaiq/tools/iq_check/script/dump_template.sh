@@ -7,7 +7,7 @@
 ./dump --template $DUMP_OPTS > .j2s_template.json
 
 # Generate template JSON C header
-xxd -iu .j2s_template.json .j2s_template_json.h
+./bin_to_c .j2s_template.json .j2s_template_json.h _j2s_template_json
 {
 	echo "#if 0 // Template JSON:"
 	cat .j2s_template.json

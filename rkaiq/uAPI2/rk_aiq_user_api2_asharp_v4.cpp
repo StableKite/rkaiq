@@ -66,7 +66,7 @@ rk_aiq_user_api2_asharpV4_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_shar
         }
     }
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
@@ -108,7 +108,7 @@ rk_aiq_user_api2_asharpV4_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_shar
         }
     }
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn

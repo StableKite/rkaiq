@@ -70,7 +70,8 @@
             (name##_times*1000.0f/name##_sum_time), name##_sum_time/name##_times); \
         name##_times = 0;                               \
         name##_sum_time = 0.0;                          \
-    }
+    }                                                   \
+    (void)name##_sum_time;
 
 #if ENABLE_PROFILING
 #define XCAM_OBJ_PROFILING_DEFINES          \

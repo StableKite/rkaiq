@@ -185,19 +185,15 @@ static XCamReturn write_dbg_buf_and_release(Again_Context_V2_t* again_contex, in
         unsigned int* tmp2 = (unsigned int* )again_contex->wrt2ddr.store_addr[i];
         if (tmp2 != NULL) {
             if(again_contex->wrt2ddr.store_fd[i] == fd) {
-                int totalpixel;
                 if (again_contex->wrt2ddr.again2ddr_mode == RK_AIQ_AGAIN_DS_4X8 || again_contex->wrt2ddr.again2ddr_mode == RK_AIQ_AGAIN_DS_MAX) {
                     ds_width = (again_contex->rawWidth + 7) / 8;
                     ds_hight = again_contex->rawHeight / 4;
-                    totalpixel = ds_width * ds_hight;
                 } else if (again_contex->wrt2ddr.again2ddr_mode == RK_AIQ_AGAIN_DS_2X8) {
                     ds_width = (again_contex->rawWidth + 7) / 8;
                     ds_hight = again_contex->rawHeight / 2;
-                    totalpixel = ds_width * ds_hight;
                 } else if (again_contex->wrt2ddr.again2ddr_mode == RK_AIQ_AGAIN_DS_1X8){
                     ds_width = (again_contex->rawWidth + 7) / 8;
                     ds_hight = again_contex->rawHeight;
-                    totalpixel = ds_width * ds_hight;
                 } else {
                     LOGE_ANR( "not supported mode:%d\n", again_contex->wrt2ddr.again2ddr_mode);
                     release_dbg_buf(again_contex);
@@ -231,19 +227,15 @@ static XCamReturn write_dbg_buf_and_release_mode(Again_Context_V2_t* again_conte
         unsigned int* tmp2 = (unsigned int* )again_contex->wrt2ddr.store_addr[i];
         if (tmp2 != NULL) {
             if(again_contex->wrt2ddr.store_fd[i] == fd) {
-                int totalpixel;
                 if (*mode == RK_AIQ_AGAIN_DS_4X8 || *mode == RK_AIQ_AGAIN_DS_MAX) {
                     ds_width = (again_contex->rawWidth + 7) / 8;
                     ds_hight = again_contex->rawHeight / 4;
-                    totalpixel = ds_width * ds_hight;
                 } else if (*mode == RK_AIQ_AGAIN_DS_2X8) {
                     ds_width = (again_contex->rawWidth + 7) / 8;
                     ds_hight = again_contex->rawHeight / 2;
-                    totalpixel = ds_width * ds_hight;
                 } else if (*mode == RK_AIQ_AGAIN_DS_1X8){
                     ds_width = (again_contex->rawWidth + 7) / 8;
                     ds_hight = again_contex->rawHeight;
-                    totalpixel = ds_width * ds_hight;
                 } else {
                     LOGE_ANR( "not supported mode:%d\n", mode);
                     release_dbg_buf(again_contex);
@@ -573,7 +565,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 #endif // defined(ISP_HW_V32) && RK_GAIN_V2_ENABLE_GAIN2DDR
 
     LOGI_ANR("%s: (exit)\n", __FUNCTION__ );
-    return XCAM_RETURN_NO_ERROR;
+    return result;
 }
 
 static XCamReturn

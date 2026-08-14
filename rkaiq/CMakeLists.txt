@@ -12,6 +12,8 @@ cmake_minimum_required(VERSION 2.8...3.22)
 
 PROJECT(rk_aiq)
 
+option(RKAIQ_STATIC_RGA_PROVIDER "Link source-built RGA directly without dlopen" OFF)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(C_LIBRARY_NAME "glibc" CACHE INTERNAL "")
@@ -40,6 +42,10 @@ endif()
 find_package(librga QUIET)
 if (librga_FOUND)
     add_compile_options(${LIBRGA_CFLAGS})
+    include_directories(${LIBRGA_INCLUDE_DIRS})
+    if(RKAIQ_STATIC_RGA_PROVIDER)
+        add_compile_options(-DRKAIQ_STATIC_RGA_PROVIDER)
+    endif()
 endif()
 
 if (RKAIQ_ENABLE_LIBDRM)
@@ -1277,7 +1283,11 @@ target_link_libraries(rkaiq
 list(APPEND RK_AIQ_STATIC_LIB_ARS ${STATIC_LIB_PREFIX}rkaiq_asd${STATIC_LIB_SUFFIX})
 endif()
 
-if (libdl_FOUND)
+if (librga_FOUND AND RKAIQ_STATIC_RGA_PROVIDER)
+    target_link_libraries(rkaiq PRIVATE librga::librga)
+endif()
+
+if (libdl_FOUND AND NOT RKAIQ_STATIC_RGA_PROVIDER)
     target_link_libraries(rkaiq
         PRIVATE
         libdl::libdl
@@ -1313,10 +1323,18 @@ foreach(STATIC_LIB_AR ${RK_AIQ_STATIC_LIB_ARS})
 endforeach()
 
 add_custom_command (TARGET rkaiq_tmp POST_BUILD
-	COMMAND ${CMAKE_AR} rcs ${CMAKE_LIBRARY_PATH}/librkaiq.a *.o
-	COMMAND ${CMAKE_STRIP} --strip-debug ${CMAKE_LIBRARY_PATH}/librkaiq.a
-	COMMAND rm *.o
-	)
+    COMMAND ${CMAKE_AR} rcs ${CMAKE_LIBRARY_PATH}/librkaiq.a *.o
+    COMMAND rm *.o
+)
+option(RKAIQ_STRIP_STATIC_ARCHIVE "Strip debug information from the combined static archive" OFF)
+if(RKAIQ_STRIP_STATIC_ARCHIVE)
+    if(NOT CMAKE_STRIP OR NOT EXISTS "${CMAKE_STRIP}")
+        message(FATAL_ERROR "RKAIQ_STRIP_STATIC_ARCHIVE requires a valid target strip tool")
+    endif()
+    add_custom_command(TARGET rkaiq_tmp POST_BUILD
+        COMMAND ${CMAKE_STRIP} --strip-debug ${CMAKE_LIBRARY_PATH}/librkaiq.a
+    )
+endif()
 
 set(RKAIQ_HEAD_DEPENDENCE
     include/

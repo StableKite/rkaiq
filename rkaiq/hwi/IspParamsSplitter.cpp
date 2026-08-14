@@ -1335,7 +1335,7 @@ XCamReturn IspParamsSplitter::SplitAecParams<struct isp3x_isp_params_cfg>(
         ret = SplitRawHistBigParams(&ori->meas.rawhist3, &left->meas.rawhist3, &right->meas.rawhist3);
 
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 template <>
@@ -1367,7 +1367,7 @@ XCamReturn IspParamsSplitter::SplitAecParams<struct isp32_isp_params_cfg>(
         ret = SplitRawHistBigParams(&ori->meas.rawhist3, &left->meas.rawhist3, &right->meas.rawhist3);
 
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 // split Awb param
@@ -1954,6 +1954,8 @@ XCamReturn IspParamsSplitter::SplitAfParams<struct isp3x_isp_params_cfg>(
     r_isp_ed = right_isp_rect_.x + right_isp_rect_.w;
     LOGD_AF("wina.x_st %d, wina.x_ed %d, l_isp_st %d, l_isp_ed %d, r_isp_st %d, r_isp_ed %d",
             x_st, x_ed, l_isp_st, l_isp_ed, r_isp_st, r_isp_ed);
+    (void)l_isp_st;
+    (void)r_isp_ed;
 
     //// winA ////
     // af win in both side
@@ -2089,6 +2091,7 @@ XCamReturn IspParamsSplitter::SplitAfParams<struct isp3x_isp_params_cfg>(
             r_af->win[1].h_offs, r_af->win[1].v_offs,
             r_af->win[1].h_size, r_af->win[1].v_size);
 
+    (void)r_blknum;
     return XCAM_RETURN_NO_ERROR;
 }
 
@@ -2989,7 +2992,7 @@ XCamReturn IspParamsSplitter::SplitAecParamsVertical<struct isp32_isp_params_cfg
         ret = SplitRawHistBigParamsVertical(&ori->meas.rawhist3, &left->meas.rawhist3, &right->meas.rawhist3);
 
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 template <>
@@ -3297,6 +3300,8 @@ XCamReturn IspParamsSplitter::SplitAfParamsVertical<struct isp32_isp_params_cfg>
     r_isp_ed = bottom_left_isp_rect_.y + bottom_left_isp_rect_.h;
     LOGD_AF("wina.x_st %d, wina.x_ed %d, l_isp_st %d, l_isp_ed %d, r_isp_st %d, r_isp_ed %d",
             y_st, y_ed, l_isp_st, l_isp_ed, r_isp_st, r_isp_ed);
+    (void)l_isp_st;
+    (void)r_isp_ed;
 
     //// winA ////
     // af win in both side
@@ -3432,6 +3437,7 @@ XCamReturn IspParamsSplitter::SplitAfParamsVertical<struct isp32_isp_params_cfg>
             r_af->win[1].h_offs, r_af->win[1].v_offs,
             r_af->win[1].h_size, r_af->win[1].v_size);
 
+    (void)r_blknum;
     return XCAM_RETURN_NO_ERROR;
 }
 

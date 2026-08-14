@@ -113,7 +113,7 @@ rk_aiq_user_api2_ablc_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_blc_attr
     }
 
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
@@ -156,7 +156,7 @@ rk_aiq_user_api2_ablc_GetInfo(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_ablc_info_
     }
 
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 
