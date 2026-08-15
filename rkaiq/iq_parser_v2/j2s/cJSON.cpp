@@ -58,7 +58,8 @@
 
 #include "cJSON.h"
 
-/* define our own boolean type */
+/* define our own boolean type for the C translation unit only */
+#ifndef __cplusplus
 #ifdef true
 #undef true
 #endif
@@ -68,6 +69,7 @@
 #undef false
 #endif
 #define false ((cJSON_bool)0)
+#endif
 
 /* define isnan and isinf for ANSI C, if in C99 or above, isnan and isinf has been defined in math.h */
 #ifndef isinf
@@ -554,7 +556,6 @@ static cJSON_bool print_number(const cJSON * const item, printbuffer * const out
     size_t i = 0;
     unsigned char number_buffer[26] = {0}; /* temporary buffer to print the number into */
     unsigned char decimal_point = get_decimal_point();
-    double test = 0.0;
 
     if (output_buffer == NULL)
     {
@@ -569,6 +570,7 @@ static cJSON_bool print_number(const cJSON * const item, printbuffer * const out
     else
     {
 #if 0
+        double test = 0.0;
         /* Try 15 decimal places of precision to avoid nonsignificant nonzero digits */
         length = sprintf((char*)number_buffer, "%1.15g", d);
 

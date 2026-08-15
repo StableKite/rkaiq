@@ -50,7 +50,7 @@ add_custom_target(
     -I${ROOT_PROJ_DIR}/include/common
     -I${ROOT_PROJ_DIR}/include/iq_parser_v2
     -I${ROOT_PROJ_DIR}/include/iq_parser
-    COMMAND ${PROJECT_SOURCE_DIR}/script/header_strip.sh
+    COMMAND /bin/sh ${PROJECT_SOURCE_DIR}/script/header_strip.sh
     .temp.h output.h
 
     COMMAND cat ${PROJECT_SOURCE_DIR}/script/m4/desc.m4
@@ -68,7 +68,7 @@ add_custom_target(
     -I${ROOT_PROJ_DIR}/include/common
     -I${ROOT_PROJ_DIR}/include/iq_parser_v2
     -I${ROOT_PROJ_DIR}/include/iq_parser_v2/j2s
-    COMMAND ${PROJECT_SOURCE_DIR}/script/headerprocess.sh
+    COMMAND /bin/sh ${PROJECT_SOURCE_DIR}/script/headerprocess.sh
     ${ROOT_PROJ_DIR}/include/iq_parser_v2/RkAiqCalibDbTypesV2.h
     ${CMAKE_BINARY_DIR}/j2s_generated.h
     COMMAND ${PROJECT_SOURCE_DIR}/bin/parser RkAiqCalibDbTypesV2_M4.h >>
@@ -95,7 +95,7 @@ add_custom_target(
 
     COMMAND ./dump --template > .j2s_template.json
     COMMAND cp ${PROJECT_SOURCE_DIR}/script/dump_template.sh ./
-    COMMAND ./dump_template.sh
+    COMMAND /bin/sh ./dump_template.sh
     ${ROOT_PROJ_DIR}/include/iq_parser_v2/j2s/j2s_generated_template_json.h
     )
 add_dependencies(dump_tool parser_tool)

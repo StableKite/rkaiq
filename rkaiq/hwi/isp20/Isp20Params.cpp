@@ -4207,8 +4207,10 @@ XCamReturn Isp20Params::merge_results<struct rkispp_params_nrcfg>(cam3aResultLis
 
     LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%s, pp cam3a results size: %d\n", __FUNCTION__, results.size());
 
+#if RKAIQ_HAVE_ANR_V1
     RkAiqIspSharpenParamsProxy* sharpen = nullptr;
     RkAiqIspEdgefltParamsProxy* edgeflt = nullptr;
+#endif
 
     for (cam3aResultList::iterator iter = results.begin ();
             iter != results.end ();)
@@ -4217,32 +4219,35 @@ XCamReturn Isp20Params::merge_results<struct rkispp_params_nrcfg>(cam3aResultLis
 
         if (cam3a_result->getType() == RESULT_TYPE_SHARPEN_PARAM || \
                 cam3a_result->getType() == RESULT_TYPE_EDGEFLT_PARAM) {
+#if RKAIQ_HAVE_ANR_V1
             if (cam3a_result->getType() == RESULT_TYPE_SHARPEN_PARAM)
                 sharpen = cam3a_result.get_cast_ptr<RkAiqIspSharpenParamsProxy>();
-            else if (cam3a_result->getType() == RESULT_TYPE_EDGEFLT_PARAM)
+            else
                 edgeflt = cam3a_result.get_cast_ptr<RkAiqIspEdgefltParamsProxy>();
-#if RKAIQ_HAVE_ANR_V1
             if (sharpen && edgeflt)
                 convertAiqSharpenToIsp20Params(pp_cfg, sharpen->data()->result, edgeflt->data()->result);
-
-            iter = results.erase (iter);
 #endif
+            iter = results.erase (iter);
             continue;
         }
         if (cam3a_result->getType() == RESULT_TYPE_UVNR_PARAM) {
             RkAiqIspUvnrParamsProxy* uvnr = cam3a_result.get_cast_ptr<RkAiqIspUvnrParamsProxy>();
 #if RKAIQ_HAVE_ANR_V1
             convertAiqUvnrToIsp20Params(pp_cfg, uvnr->data()->result);
-            iter = results.erase (iter);
+#else
+            (void)uvnr;
 #endif
+            iter = results.erase (iter);
             continue;
         }
         if (cam3a_result->getType() == RESULT_TYPE_YNR_PARAM) {
             RkAiqIspYnrParamsProxy* ynr = cam3a_result.get_cast_ptr<RkAiqIspYnrParamsProxy>();
 #if RKAIQ_HAVE_ANR_V1
             convertAiqYnrToIsp20Params(pp_cfg, ynr->data()->result);
-            iter = results.erase (iter);
+#else
+            (void)ynr;
 #endif
+            iter = results.erase (iter);
             continue;
         }
         if (cam3a_result->getType() == RESULT_TYPE_ORB_PARAM) {
@@ -4263,14 +4268,15 @@ XCamReturn Isp20Params::get_tnr_cfg_params(cam3aResultList &results, struct rkis
 
     LOGE_CAMHW_SUBM(ISP20PARAM_SUBM, "%s, pp cam3a results size: %d\n", __FUNCTION__, results.size());
     SmartPtr<cam3aResult> cam3a_result = get_3a_result(results, RESULT_TYPE_TNR_PARAM);
-    if (cam3a_result.ptr()) {
-        RkAiqIspTnrParamsProxy* tnr = nullptr;
-        tnr = cam3a_result.get_cast_ptr<RkAiqIspTnrParamsProxy>();
 #if RKAIQ_HAVE_ANR_V1
-        if (tnr.ptr())
+    if (cam3a_result.ptr()) {
+        RkAiqIspTnrParamsProxy* tnr = cam3a_result.get_cast_ptr<RkAiqIspTnrParamsProxy>();
+        if (tnr)
             convertAiqTnrToIsp20Params(tnr_cfg, tnr->data()->result);
-#endif
     }
+#else
+    (void)tnr_cfg;
+#endif
     return XCAM_RETURN_NO_ERROR;
 }
 

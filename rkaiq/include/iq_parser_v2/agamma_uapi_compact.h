@@ -18,6 +18,8 @@
 #ifndef __AGAMMA_UAPI_COMPACT_H__
 #define __AGAMMA_UAPI_COMPACT_H__
 
+#include "agamma_head.h"
+
 #define CALIBDB_AGAMMA_KNOTS_NUM     45
 #define CALIBDB_AGAMMA_KNOTS_NUM_V30 49
 

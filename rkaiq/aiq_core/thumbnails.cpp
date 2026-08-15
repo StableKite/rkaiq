@@ -141,6 +141,7 @@ struct RefCountedVideoBuffer {
             cnt++;
         }
         LOGV_ANALYZER("%p ref count %d", this->buffer, cnt);
+        (void)cnt;
     }
 
     RefCountedVideoBuffer(const RefCountedVideoBuffer& other) {

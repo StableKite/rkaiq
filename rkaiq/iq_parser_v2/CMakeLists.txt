@@ -29,7 +29,7 @@ add_custom_command(
     -I${rk_aiq_SOURCE_DIR}/include/iq_parser
     -I${rk_aiq_SOURCE_DIR}/include/xcore
     -I${rk_aiq_SOURCE_DIR}/include/algos
-    COMMAND ${rk_aiq_SOURCE_DIR}/tools/iq_check/script/header_strip.sh
+    COMMAND /bin/sh ${rk_aiq_SOURCE_DIR}/tools/iq_check/script/header_strip.sh
     .temp.h output.h
 )
 
@@ -53,7 +53,7 @@ add_custom_command(
     -I${rk_aiq_SOURCE_DIR}/include/algos
     -I${rk_aiq_SOURCE_DIR}/include/iq_parser_v2
     -I${rk_aiq_SOURCE_DIR}/include/iq_parser_v2/j2s
-    COMMAND ${rk_aiq_SOURCE_DIR}/tools/iq_check/script/headerprocess.sh
+    COMMAND /bin/sh ${rk_aiq_SOURCE_DIR}/tools/iq_check/script/headerprocess.sh
     ${rk_aiq_SOURCE_DIR}/include/iq_parser_v2/RkAiqCalibDbTypesV2.h
     ${rk_aiq_BINARY_DIR}/.j2s_generated.h
 	#COMMAND ${rk_aiq_SOURCE_DIR}/tools/iq_check/bin/parser RkAiqCalibDbTypesV2_M4.h CamCalibDbProj_t >>
@@ -76,8 +76,10 @@ add_custom_target(
     -I${rk_aiq_SOURCE_DIR}/include/iq_parser_v2
     -I${rk_aiq_SOURCE_DIR}/include/iq_parser_v2/j2s
 
-	COMMAND ./tobin ${rk_aiq_BINARY_DIR}/j2s_code2bin.bin
-	COMMAND cd ${rk_aiq_BINARY_DIR}/ && xxd -i j2s_code2bin.bin j2s_code2bin.h
+    COMMAND cc -std=c11 -Wall -Wextra -Werror
+        ${rk_aiq_SOURCE_DIR}/tools/iq_check/src/bin_to_c.c -o bin_to_c
+    COMMAND ./tobin ${rk_aiq_BINARY_DIR}/j2s_code2bin.bin
+    COMMAND ./bin_to_c ${rk_aiq_BINARY_DIR}/j2s_code2bin.bin ${rk_aiq_BINARY_DIR}/j2s_code2bin.h
     DEPENDS ${rk_aiq_BINARY_DIR}/.j2s_generated.h
     )
 
@@ -116,7 +118,7 @@ add_custom_target(
 
     COMMAND ./dump --template > .j2s_template.json
     COMMAND cp ${rk_aiq_SOURCE_DIR}/tools/iq_check/script/dump_template.sh ./
-    COMMAND ./dump_template.sh
+    COMMAND /bin/sh ./dump_template.sh
     ${rk_aiq_BINARY_DIR}/j2s_generated_template_json.h
 	DEPENDS ${rk_aiq_BINARY_DIR}/.j2s_generated.h
 	DEPENDS j2s_generated_optim

@@ -16,7 +16,7 @@ set(RKAIQ_ENABLE_AF          FALSE CACHE INTERNAL "Build rkaiq's AF algorithm")
 set(RKAIQ_HAVE_ONLY_CUSTOM_AF FALSE CACHE INTERNAL "Build AF stats for custom algorithm")
 set(RKAIQ_INSTALL_ALGOS_LIB FALSE CACHE INTERNAL "Install algos lib to algos dir")
 set(RKAIQ_USE_RAWSTREAM_LIB FALSE CACHE INTERNAL "Build rkaiq with libstream")
-set(RKAIQ_J2S4B_DEV          TRUE CACHE INTERNAL "Build j2s4b_dev running on device")
+option(RKAIQ_J2S4B_DEV "Build j2s4b_dev running on the target device" OFF)
 
 if (RKAIQ_TARGET_SOC STREQUAL "rk3562")
     set(RKAIQ_ISP_VERSION        "32_lite"  CACHE INTERNAL "ISP hardware version 32 lite"     FORCE)

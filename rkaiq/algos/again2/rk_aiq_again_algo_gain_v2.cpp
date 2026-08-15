@@ -196,15 +196,12 @@ uint32_t gain_float_lim2_int(float In, int bit_deci_dst, int type)
     uint8_t *in_u8 = reinterpret_cast<uint8_t *>(&In);
     int exp_val = ((in_u8[3] << 1) & (in_u8[2] >> 7) & 0xff);
     uint32_t dst;
-    int shf_bit;
     if (exp_val - 127 <= bit_deci_dst || type == 1)
     {
-        shf_bit = bit_deci_dst - (exp_val - 127);
         dst = ROUND_F(In * (1 << bit_deci_dst));
     }
     else
     {
-        shf_bit = (exp_val - 127) - bit_deci_dst;
         dst = ROUND_F(In / (1 << bit_deci_dst));
     }
     return dst;

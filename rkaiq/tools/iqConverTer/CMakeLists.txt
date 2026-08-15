@@ -84,9 +84,9 @@ add_custom_target(
     -I${ROOT_PROJ_DIR}/include/common
     -I${ROOT_PROJ_DIR}/include/uAPI
     -I${ROOT_PROJ_DIR}/include/algos
-    COMMAND ${PROJECT_SOURCE_DIR}/script/header_strip.sh
+    COMMAND /bin/sh ${PROJECT_SOURCE_DIR}/script/header_strip.sh
     .temp.h output.h
-    COMMAND ${PROJECT_SOURCE_DIR}/script/headerprocess.sh
+    COMMAND /bin/sh ${PROJECT_SOURCE_DIR}/script/headerprocess.sh
     ${ROOT_PROJ_DIR}/include/iq_parser_v2/RkAiqCalibDbTypesV2.h
     ${ROOT_PROJ_DIR}/include/iq_parser_v2/j2s/j2s_generated.h
     COMMAND ${PROJECT_SOURCE_DIR}/bin/parser output.h >>

@@ -233,7 +233,9 @@ static XCamReturn groupAgainV2Processing(const RkAiqAlgoCom* inparams, RkAiqAlgo
         }
 #endif
 
-        if(again_contex_v2->isReCalculate) {
+        (void)deltaIso;
+
+    if(again_contex_v2->isReCalculate) {
             Again_result_V2_t ret_v2 = AGAINV2_RET_SUCCESS;
             ret_v2 = Again_Process_V2(again_contex_v2, &stExpInfoV2);
             if(ret_v2 != AGAINV2_RET_SUCCESS) {

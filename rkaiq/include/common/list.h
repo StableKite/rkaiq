@@ -301,7 +301,7 @@ AIQ_MAYBE_UNUSED static void print_list(struct list_head* head) {
     struct list_head* p;
     p = head->next;
     while (p != head) {
-        printf("%p ", p);
+        printf("%p ", static_cast<void *>(p));
         p = p->next;
     }
     printf("\n");

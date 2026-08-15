@@ -1255,7 +1255,6 @@ static void j2s_store_obj(j2s_obj* obj, int fd, void* ptr_)
 {
     char buf[MAX_NAME] = { 0 };
     int size;
-    ssize_t bytes_written = 0;
     char* ptr = (char*)ptr_;
 
     if (!J2S_IS_POINTER(obj))
@@ -1274,9 +1273,11 @@ static void j2s_store_obj(j2s_obj* obj, int fd, void* ptr_)
     DBG("store obj: %s from %p, size %d\n", obj->name, ptr, size);
 
     strcpy(buf, obj->name);
-    bytes_written = write(fd, buf, MAX_NAME);
-    bytes_written = write(fd, &size, sizeof(int));
-    bytes_written = write(fd, ptr, size);
+    if (write(fd, buf, MAX_NAME) != MAX_NAME ||
+        write(fd, &size, sizeof(int)) != static_cast<ssize_t>(sizeof(int)) ||
+        write(fd, ptr, size) != size) {
+        DBG("failed to store object: %s\n", obj->name);
+    }
 }
 
 static int _j2s_obj_from_cache(j2s_ctx* ctx, int obj_index, int fd, void* ptr)
@@ -1453,13 +1454,14 @@ static void _j2s_struct_to_cache(j2s_ctx* ctx, int struct_index, int fd,
     j2s_struct* struct_obj;
     j2s_obj* child;
     int child_index;
-    ssize_t bytes_written = 0;
-
     if (struct_index < 0)
         return;
 
-    if (struct_index == ctx->root_index)
-        bytes_written = write(fd, ptr, j2s_struct_size(ctx, struct_index));
+    if (struct_index == ctx->root_index) {
+        const int struct_size = j2s_struct_size(ctx, struct_index);
+        if (write(fd, ptr, struct_size) != struct_size)
+            DBG("failed to store root structure\n");
+    }
 
     struct_obj = &ctx->structs[struct_index];
 

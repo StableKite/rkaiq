@@ -1,3 +1,4 @@
+#include <array>
 #include "socket_server.h"
 #include "xcam_obj_debug.h"
 #include <errno.h>
@@ -332,10 +333,9 @@ int SocketServer::Recvieve(int sync) {
 
 int SocketServer::poll_event(int timeout_msec, int fds[]) {
   int num_fds = fds[1] == -1 ? 1 : 2;
-  struct pollfd poll_fds[num_fds];
+  std::array<struct pollfd, 2> poll_fds{};
   int ret = 0;
 
-  memset(poll_fds, 0, sizeof(poll_fds));
   poll_fds[0].fd = fds[0];
   poll_fds[0].events = (POLLIN | POLLOUT | POLLHUP);
 
@@ -345,7 +345,7 @@ int SocketServer::poll_event(int timeout_msec, int fds[]) {
     poll_fds[1].revents = 0;
   }
 
-  ret = poll(poll_fds, num_fds, timeout_msec);
+  ret = poll(poll_fds.data(), num_fds, timeout_msec);
   if (fds[1] != -1) {
     if ((poll_fds[1].revents & POLLIN) || (poll_fds[1].revents & POLLPRI)) {
       LOGD_IPC("%s: Poll returning from flush", __FUNCTION__);

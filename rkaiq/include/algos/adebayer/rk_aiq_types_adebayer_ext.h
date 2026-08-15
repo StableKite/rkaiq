@@ -31,7 +31,7 @@ typedef enum rk_aiq_debayer_op_mode_s {
     RK_AIQ_DEBAYER_MODE_MAX
 } rk_aiq_debayer_op_mode_t;
 
-typedef struct adebayer_attrib_auto_s {
+typedef struct adebayer_ext_attrib_auto_s {
     // M4_ARRAY_DESC("debayer_filter1", "s8", M4_SIZE(1,5),  M4_RANGE(-128, 128), "[2,-6,0,6,-2]", M4_DIGIT(0), M4_DYNAMIC(0), 0)
     int debayer_filter1[5];
 
@@ -79,7 +79,7 @@ typedef struct adebayer_attrib_auto_s {
 
 } adebayer_attrib_auto_t;
 
-typedef struct adebayer_attrib_manual_s {
+typedef struct adebayer_ext_attrib_manual_s {
 
     // M4_ARRAY_DESC("filter1", "s8", M4_SIZE(1,5),  M4_RANGE(-8, 7), "[2,-6,0,6,-2]", M4_DIGIT(0), M4_DYNAMIC(0), 0)
     int8_t      filter1[5];
@@ -124,7 +124,7 @@ typedef struct adebayer_attrib_manual_s {
     uint8_t     shift_num;
 } adebayer_attrib_manual_t;
 
-typedef struct adebayer_attrib_s {
+typedef struct adebayer_ext_attrib_s {
     rk_aiq_uapi_sync_t          sync;
 
     // M4_NUMBER_DESC("enable", "u8", M4_RANGE(0,1), "0", M4_DIGIT(0))

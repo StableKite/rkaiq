@@ -2066,7 +2066,7 @@ RkAiqCore::prepare(enum rk_aiq_core_analyze_type_e type)
 
     EXIT_ANALYZER_FUNCTION();
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
@@ -2637,7 +2637,6 @@ XCamReturn RkAiqCore::groupAnalyze(uint64_t grpId, const RkAiqAlgosGroupShared_t
 #endif
             mCb->rkAiqCalcDone(fullParam);
     }
-exit:
     EXIT_ANALYZER_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
 }

@@ -65,7 +65,7 @@ rk_aiq_user_api2_abayertnrV2_SetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_b
         }
     }
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 XCamReturn
@@ -105,7 +105,7 @@ rk_aiq_user_api2_abayertnrV2_GetAttrib(const rk_aiq_sys_ctx_t* sys_ctx, rk_aiq_b
         }
     }
 
-    return XCAM_RETURN_NO_ERROR;
+    return ret;
 }
 
 

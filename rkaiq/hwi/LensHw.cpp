@@ -377,6 +377,7 @@ LensHw::setFocusParamsSync(int position, bool is_update_time, bool focus_norebac
         end_time = _focus_tim.vcm_end_t.tv_sec * 1000 + _focus_tim.vcm_end_t.tv_usec / 1000;
         LOGD_CAMHW_SUBM(LENS_SUBM, "|||set focus result: %d, focus_pos %d, _last_zoomchg_focus %d, end time %ld, is_update_time %d, is_need_reback %d",
                         position, set_focus.focus_pos, _last_zoomchg_focus, end_time, is_update_time, set_focus.is_need_reback);
+        (void)end_time;
     }
 
     EXIT_CAMHW_FUNCTION();
@@ -452,6 +453,8 @@ LensHw::setFocusParams(SmartPtr<RkAiqFocusParamsProxy>& focus_params)
         end_time = _focus_tim.vcm_end_t.tv_sec * 1000 + _focus_tim.vcm_end_t.tv_usec / 1000;
         LOGI_AF("|||set focus: algo_pos %d, driver_pos %d, end time %ld, need time %d",
                 algo_pos, driver_pos, end_time, end_time - start_time);
+        (void)start_time;
+        (void)end_time;
     }
 
     EXIT_CAMHW_FUNCTION();
@@ -697,6 +700,7 @@ LensHw::setZoomFocusRebackSync(SmartPtr<rk_aiq_focus_params_t> attrPtr, bool is_
     LOGD_CAMHW_SUBM(LENS_SUBM, "zoom_pos %d, focus_pos %d, is_need_zoom_reback %d, is_need_focus_reback %d, end time %ld, is_update_time %d",
                     zoom_pos, focus_pos, set_zoom.is_need_zoom_reback, set_zoom.is_need_focus_reback, time0, is_update_time);
 
+    (void)time0;
     EXIT_CAMHW_FUNCTION();
     return XCAM_RETURN_NO_ERROR;
 }
@@ -1250,6 +1254,9 @@ LensHw::setLowPassFv(uint32_t sub_shp4_4[RKAIQ_RAWAF_SUMDATA_NUM], uint32_t sub_
 
     LOGD_CAMHW_SUBM(LENS_SUBM, "%s: frm_id %d, lowPassFv4_4 %lld, lowPassFv8_8 %lld, lowPassLight %lld\n",
                     __func__, frameid, lowPassFv4_4, lowPassFv8_8, lowPassLight);
+    (void)lowPassFv4_4;
+    (void)lowPassFv8_8;
+    (void)lowPassLight;
 
     EXIT_CAMHW_FUNCTION();
     return ret;

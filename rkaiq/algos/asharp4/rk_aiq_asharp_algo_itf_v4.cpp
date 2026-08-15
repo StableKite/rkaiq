@@ -293,7 +293,7 @@ processing(const RkAiqAlgoCom* inparams, RkAiqAlgoResCom* outparams)
 #endif
 
     LOGD_ASHARP("%s: oyyf(exit)\n", __FUNCTION__ );
-    return XCAM_RETURN_NO_ERROR;
+    return result;
 }
 
 static XCamReturn

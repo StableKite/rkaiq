@@ -437,6 +437,8 @@ void CacAlgoAdaptor::OnFrameEvent(const RkAiqAlgoProcAcac* input, RkAiqAlgoProcR
     gain_high = (int)(log(static_cast<float>(iso_high) / 50) / log(2.0));
     gain_low  = (int)(log(static_cast<float>(iso_low) / 50) / log(2.0));
 
+    (void)ratio;
+
     gain_low  = MIN(MAX(gain_low, 0), max_iso_step - 1);
     gain_high = MIN(MAX(gain_high, 0), max_iso_step - 1);
 

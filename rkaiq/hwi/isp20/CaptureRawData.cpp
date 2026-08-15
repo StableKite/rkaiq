@@ -675,14 +675,12 @@ CaptureRawData::write_metadata_to_file(const char* dir_path,
 int CaptureRawData::calculate_stride_per_line(const struct capture_fmt& fmt,
         uint32_t& bytesPerLine, SmartPtr<V4l2Device>  dev)
 {
-    uint32_t pixelsPerLine = 0, stridePerLine = 0;
+    uint32_t stridePerLine = 0;
     /* The actual size stored in the memory */
     // uint32_t actualBytesPerLine = 0;
 
     bytesPerLine = sns_width * fmt.bpp[0] / 8;
 
-    pixelsPerLine = fmt.pcpp * DIV_ROUND_UP(sns_width, fmt.pcpp);
-    // actualBytesPerLine = pixelsPerLine * fmt.bpp[0] / 8;
 
 #if 0
     /* mipi wc(Word count) must be 4 byte aligned */
