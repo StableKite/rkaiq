@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8...3.22)
 
 set(TCP_TEST_SOURCE ${LOGGER_SOURCE} ${NET_SERVER_SOURCE})
 add_executable(tcp_server ${TCP_TEST_SOURCE} tcp/server.cpp)
